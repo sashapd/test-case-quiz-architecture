@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br />
+<br />
+<br />
+<div class="ui container">
+    <br />
+    <br />
+    <br />
+    <div class="ui four cards">
+        <a class="violet card" id="req-btn">
+            <h2 class="ui white inverted header">Модуль збору та аналізу вимог</h2>
+        </a>
+        <a class="violet card" id="modeling-btn">
+            <h2 class="ui white inverted header">Модуль проектування та моделювання</h2>
+        </a>
+        <a class="violet card" id="coding-btn">
+            <h2 class="ui white inverted header">Модуль кодування</h2>
+        </a>
+        <a class="violet card" id="testing-btn" onclick="window.location='categories'">
+            <h2 class="ui white inverted header" onclick="window.location='categories'">Модуль тестування</h2>
+        </a>
+    </div>
+</div>
+
+<div class="ui inverted vertical footer segment form-page">
+    <div class="ui container">
+        <p>
+            VNS v3 2019. All Rights Reserved. M. Bielan, O. Padko, Y. Khomenko.
+        </p>
+        <p>
+            oleksandr.padko.pz.2016@lpnu.ua
+        </p>
+    </div>
+</div>
+{% endblock %}

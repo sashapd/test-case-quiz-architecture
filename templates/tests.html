@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="ui container">
+    <form action="check_tests" class="ui form" method="post">
+        <br />
+        <div class="ui segment">
+            <h4 class="ui left floated header">{{ test_case_name }}</h4>
+            <h4 class="ui right floated header">Тест кейс №{{ index }}</h4>
+            <div class="ui clearing divider"></div>
+            <div class="ui grid container">
+                <div class="eight wide column left">
+                    <h4 style="text-align: left;">Кроки тест-кейсів</h4>
+                </div>
+                <div class="eight wide column left">
+                    <h4 style="text-align: left;">Порядковий номер тест-кейсу</h4>
+                </div>
+                {%for step_name, id in steps%}
+                <div class="eight wide column left">
+                    <p style="text-align: left;">{{ step_name }}</p>
+                </div>
+                <div class="field ui left">
+                    <div class="fields">
+                        <div class="eight wide column">
+                            <input name="step-{{ id }}" type="number" placeholder="-" min="1" max="20">
+                        </div>
+                    </div>
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+        <button class="positive ui button">Закінчити завдання</button>
+
+    </form>
+</div>
+{% endblock %}

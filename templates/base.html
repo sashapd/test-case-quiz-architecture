@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  {% block head %}
+  <title>Віртуальна навчальна лабораторія</title>
+  {% endblock %}
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+
+  <style>
+    @media (min-height: 160px) {
+      .ui.footer.form-page {
+        /* Increased specificity for SO snippet priority */
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+      }
+    }
+    #req-btn {
+      background-color: #00b5ad;
+      padding: 30px;
+    }
+    #modeling-btn {
+      background-color: #2185d0;
+      padding: 30px;
+    }
+    #coding-btn {
+      background-color: #a333c8;
+      padding: 30px;
+    }
+    #testing-btn {
+      background-color: #6435c9;
+      padding: 30px;
+    }
+    .category-card {
+      padding: 20px !important;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="ui menu">
+    <div class="header item">
+      Віртуальна лабораторія програмної інженерії
+    </div>
+    <a class="item {% block info_block_active %}{% endblock %}" href="/">
+      Головна сторінка
+    </a>
+
+    {% if username is defined %}
+    <div class="right menu">
+      <div class="header item">
+        {{ username }}
+      </div>
+    </div>
+    <div class="item">
+      <a class="ui primary button" href="logout">Вийти</a>
+    </div>
+    {% endif %}
+  </div>
+  <div class="ui grid centered">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+
+</html>

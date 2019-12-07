@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="four wide centered column">
+    <form class="ui form" action="/login" method="post">
+      <div class="field">
+        <label>Ім'я користувача</label>
+        <input type="text" name="username" placeholder="Ім'я">
+      </div>
+      <div class="field">
+        <label>Пароль</label>
+        <input type="password" name="password" placeholder="Пароль">
+      </div>
+      <button class="ui button positive" type="submit">Увійти</button>
+      <button class="ui button positive" type="submit">Зареєструватись</button>
+    </form>
+    {% if error is defined %}
+        <h4>Помилка: Неправильний логін або пароль</h4>
+    {% endif %}
+</div>
+{% endblock %}

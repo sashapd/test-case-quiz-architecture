@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+<div class="ui text container segment">
+    <h2 class="ui header">Довідка</h2>
+    <p>якийсь опис</p>
+    <p>бла бла бла</p>
+</div>
+<br />
+<br />
+<div class="ui container">
+    <div class="ui grid container">
+        {%for category_id, category_name in categories%}
+        <div class="four wide column">
+            <div class="ui card category-card">
+                <h1>{{category_name}}</h1>
+                <a href="/start_tests?id={{category_id}}">
+                    <button class="positive ui button" href="/tests?id={{category_id}}">Почати модуль</button>
+                </a>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+</div>
+
+<div class="ui inverted vertical footer segment form-page">
+    <div class="ui container">
+        <p>
+            VNS v3 2019. All Rights Reserved. M. Bielan, O. Padko, Y. Khomenko.
+        </p>
+        <p>
+            oleksandr.padko.pz.2016@lpnu.ua
+        </p>
+    </div>
+</div>
+{% endblock %}
