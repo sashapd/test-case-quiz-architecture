@@ -89,6 +89,8 @@ def get_random_test_case(c, seen, category_id):
         c.execute('select id from test_case where category_key=? order by RANDOM() limit 1'.format(
             ', '.join(seen)), (category_id,))
         res = c.fetchone()
+        if res == None:
+            return res
     return res[0]
 
 
@@ -204,7 +206,7 @@ def results():
         results_combined['wrong'] = sum(r['wrong'] for r in result_by_test_case)
         results_combined['wrong_order'] = sum(r['wrong_order'] for r in result_by_test_case)
         results_combined['all_correct'] = sum(r['all_correct'] for r in result_by_test_case)
-        return render_template('results.html', results=enumerate(result_by_test_case), results_combined=results_combined)
+        return render_template('results.html', username=session['username'], results=enumerate(result_by_test_case), results_combined=results_combined)
     return render_template('login.html')
 
 
@@ -263,4 +265,4 @@ if __name__ == '__main__':
 # one test case per screen +
 # wrong answer - red, right answer - green, yellow - incorrect sequence +
 # sequence of test cases +
-# end - total results, percentage by test case
+# end - total results, percentage by test case +
