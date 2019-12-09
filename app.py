@@ -3,6 +3,78 @@ import random
 import sqlite3
 
 
+class TestCaseDataStore:
+    __instance = None
+
+    @staticmethod
+    def getInstance():
+        if TestCaseDataStore.__instance == None:
+            TestCaseDataStore()
+        return TestCaseDataStore.__instance
+
+    def __init__(self):
+        TestCaseDataStore.__instance = self
+
+        self.db = getattr(g, '_database', None)
+        self.db = g._database = sqlite3.connect(':memory:')
+        self.cursor = db.cursor()
+
+    def get_db_object(self):
+        return self.db
+
+    def get_db_cursor(self):
+        return self.cursor
+
+    def get_random_test_case(self, seen, category_id):
+        self.cursor.execute('select id from test_case where category_key=? and id not in ({}) order by RANDOM() limit 1'.format(
+            ', '.join(seen)), (category_id,))
+        res = self.cursor.fetchone()
+        if res is None:
+            self.cursor.execute('select id from test_case where category_key=? order by RANDOM() limit 1'.format(
+                ', '.join(seen)), (category_id,))
+            res = self.cursor.fetchone()
+            if res == None:
+                return res
+        return res[0]
+
+
+    def get_steps_for_test_case(self, test_case_id):
+        select_right_case = 'select name, id from test_step where test_case_id=?'
+        self.cursor.execute(select_right_case,
+                (str(test_case_id),))
+        steps = self.cursor.fetchall()
+        select_right_case_names = 'select name from test_step where test_case_id=?'
+        self.cursor.execute('select name, MIN(id) as id from test_step where test_case_id !=? and name not in ({}) group by name order by RANDOM() limit 4'.format(select_right_case_names),
+                (str(test_case_id), str(test_case_id)))
+        steps += self.cursor.fetchall()
+        random.shuffle(steps)
+        return steps
+
+    
+    def get_test_case_name(self, test_case_id):
+        self.cursor.execute('select description from test_case where id=?',
+                (str(test_case_id),))
+        res = self.cursor.fetchall()
+        return res[0][0]
+
+
+    def get_test_step_name(self, test_case_id):
+        self.cursor.execute('select name from test_step where id=?', (str(test_case_id),))
+        res = self.cursor.fetchall()
+        return res[0][0]
+
+    def is_in_test_case(self, id, test_case_id):
+        self.cursor.execute('select test_case_id from test_step where id=? and test_case_id=?',
+                (id, test_case_id,))
+        return len(self.cursor.fetchall()) > 0
+
+
+    def get_step_num_by_id(self, id):
+        self.cursor.execute('select number from test_step where id=?', (id,))
+        return self.cursor.fetchall()[0][0]
+
+
+
 def populate_db(c):
     c.execute('''CREATE TABLE user
                 (id integer primary key, username text, password text)''')
@@ -16,9 +88,34 @@ def populate_db(c):
     users = [('sasha', '1234'), ('admin', '1234')]
     c.executemany('insert into user(username, password) values (?, ?)', users)
 
-    data_by_category = {'Login module':
-                        {'Enter right login': ['Enter "sasha" login', 'Enter "1234" as password', 'Press "Login" button'],
-                         'Test register': ['Press register button', 'Enter any credentials', 'Press "finish register"']}, "Register module": {}, "Test test module": {}, "lalal": {}, "yoyo": {}}
+    data_by_category = {
+        'Register module': {
+            'Register with correct data': ['Click Register button', 'Enter input data in boxes : First Name, Last Name, Login, Password', 'Click Save button'],
+            'Register with blank data': ['Click Register button',  'Enter no input data in boxes : First Name, Last Name, Login, Password', 'Click Save button'],
+            'Register without First Name': ['Click Register button',  'Enter input data in boxes : Last Name, Login, Password',  'Click Save button'],
+            'Register without Last Name': ['Click Register button', 'Enter input data in boxes : First Name, Login, Password', 'Click Save button'],
+            'Register without Login': ['Click Register button', 'Enter input data in boxes : First Name, Last Name, Password', 'Click Save button'],
+            'Register without Password': ['Click Register button', 'Enter input data in boxes : First Name, Last Name, Login', 'Click Save button']
+        },
+        'Login module': {
+            'Login with correct data': ['Click Login button', 'Enter correct input data in boxes : Login, Password', 'Click Ok button'],
+            'Login with blank data': ['Click Login button', 'Enter no input data in boxes : Login, Password', 'Click Ok button'],
+            'Login without Login': ['Click Login button', 'Enter input data in boxes : Password', 'Click Ok button'],
+            'Login without Password': ['Click Login button', 'Enter input data in boxes : Login', 'Click Ok button'],
+            'Login with incorrect Login and Password': ['Click Login button', 'Enter incorrect data in boxes : Login, Password', 'Click Ok button']
+        },
+        'Logout module': {
+            'Logout': ['Click Logout button']
+        },
+        'Test module': {
+            'Go to Test Module': ['Login with correct data', 'Go to Test module'],
+            'Positive test of "Register with correct data" module': ['Login with correct data', 'Go to Test Module', 'Go to "Register with correct data" module', 'Choose 1 - Click Register button', 'Choose 2 - Enter input data in boxes : First Name, Last Name, Login, Password', 'Choose 3 - Click Save button', 'Click "Check task"'],
+            'Negative test of "Register with correct data" module': ['Login with correct data', 'Go to Test Module', 'Go to "Register with correct data" module', 'Choose 1 - Click Save button', 'Choose 2 - Click Register button ', 'Choose 3 - Enter input data in boxes : First Name, Last Name, Login, Password', 'Click "Check task"'],
+            'Test ability to choose Next Task after checking the first one': ['Login with correct data', 'Go to Test Module', 'Complete one of the tasks', 'Click button "Next task"'],
+            'Test ability to Finish the test': ['Login with correct data', 'Go to Test Module', 'Complete one of the tasks', 'Click button "Finish Testing"'],
+            'Test ability to Try Again to complete the test': ['Login with correct data', 'Go to Test Module', 'Complete one of the tasks', 'Click button "Finish Testing"', 'Click button "Try Again"']
+        },
+    }
 
     for category, test_cases in data_by_category.items():
         c.execute('insert into category(name) values (?)', (category,))
@@ -95,11 +192,13 @@ def get_random_test_case(c, seen, category_id):
 
 
 def get_steps_for_test_case(c, test_case_id):
-    c.execute('select name, id from test_step where test_case_id=?',
+    select_right_case = 'select name, id from test_step where test_case_id=?'
+    c.execute(select_right_case,
               (str(test_case_id),))
     steps = c.fetchall()
-    c.execute('select name, id from test_step where test_case_id !=? order by RANDOM() limit 4',
-              (str(test_case_id),))
+    select_right_case_names = 'select name from test_step where test_case_id=?'
+    c.execute('select name, MIN(id) as id from test_step where test_case_id !=? and name not in ({}) group by name order by RANDOM() limit 4'.format(select_right_case_names),
+              (str(test_case_id), str(test_case_id)))
     steps += c.fetchall()
     random.shuffle(steps)
     return steps
@@ -156,7 +255,8 @@ def get_step_num_by_id(c, id):
 
 def get_steps_with_colors(c, steps_by_id, test_case_id):
     res = []
-    session['quiz']['results'].append({'correct': 0, 'wrong': 0, 'wrong_order': 0, 'all_correct': 0})
+    session['quiz']['results'].append(
+        {'correct': 0, 'wrong': 0, 'wrong_order': 0, 'all_correct': 0})
     for id, num in steps_by_id.items():
         color = "black"
         in_test_case = is_in_test_case(c, id, test_case_id)
@@ -202,10 +302,14 @@ def results():
     if 'user_type' in session:
         result_by_test_case = session['quiz']['results']
         results_combined = {}
-        results_combined['correct'] = sum(r['correct'] for r in result_by_test_case)
-        results_combined['wrong'] = sum(r['wrong'] for r in result_by_test_case)
-        results_combined['wrong_order'] = sum(r['wrong_order'] for r in result_by_test_case)
-        results_combined['all_correct'] = sum(r['all_correct'] for r in result_by_test_case)
+        results_combined['correct'] = sum(
+            r['correct'] for r in result_by_test_case)
+        results_combined['wrong'] = sum(r['wrong']
+                                        for r in result_by_test_case)
+        results_combined['wrong_order'] = sum(
+            r['wrong_order'] for r in result_by_test_case)
+        results_combined['all_correct'] = sum(
+            r['all_correct'] for r in result_by_test_case)
         return render_template('results.html', username=session['username'], results=enumerate(result_by_test_case), results_combined=results_combined)
     return render_template('login.html')
 

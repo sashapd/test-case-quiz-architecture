@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   {% block head %}
-  <title>Віртуальна навчальна лабораторія</title>
+  <title>Virtual software laboratory</title>
   {% endblock %}
 
   <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
@@ -46,10 +46,10 @@
 <body>
   <div class="ui menu">
     <div class="header item">
-      Віртуальна лабораторія програмної інженерії
+      Virtual laboratory of software engineering
     </div>
     <a class="item {% block info_block_active %}{% endblock %}" href="/">
-      Головна сторінка
+      Home 
     </a>
 
     {% if username is defined %}
@@ -59,7 +59,7 @@
       </div>
     </div>
     <div class="item">
-      <a class="ui primary button" href="logout">Вийти</a>
+      <a class="ui primary button" href="logout">Log out</a>
     </div>
     {% endif %}
   </div>
