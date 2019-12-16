@@ -73,6 +73,46 @@ class TestCaseDataStore:
         self.cursor.execute('select number from test_step where id=?', (id,))
         return self.cursor.fetchall()[0][0]
 
+class TestCaseDataStoreLogger:
+    __instance = None
+
+    def getInstance(self):
+        self.instance.getInstance()
+
+    def __init__(self):
+        print("Log")
+        self.instance = TestCaseDataStore.getInstance()
+
+    def get_db_object(self):
+        print("Log")
+        return self.instance.get_db_object()
+
+    def get_db_cursor(self):
+        print("Log")
+        return self.instance.get_db_cursor()
+
+    def get_random_test_case(self, seen, category_id):
+        print("Log")
+        return self.get_random_test_case(seen, category_id)
+
+    def get_steps_for_test_case(self, test_case_id):
+        print("Log")
+        return self.get_steps_for_test_case(test_case_id)
+    
+    def get_test_case_name(self, test_case_id):
+        print("Log")
+        return self.get_test_case_name(test_case_id)
+
+    def get_test_step_name(self, test_case_id):
+        print("Log")
+        return self.get_test_case_name(test_case_id)
+
+    def is_in_test_case(self, id, test_case_id):
+        print("Log")
+        return self.is_in_test_case(id, test_case_id)
+
+
+
 
 
 def populate_db(c):
@@ -325,6 +365,17 @@ def login():
         else:
             return render_template('login.html', error='AUTH')
     return redirect(url_for('index'))
+
+
+@app.route('/register', methods=['POST', 'GET'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        session['username'] = username
+        session['user_type'] = get_user_type(username)
+        return redirect(url_for('index'))
+    return render_template('register.html')
 
 
 @app.route('/logout')

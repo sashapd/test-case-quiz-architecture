@@ -1,16 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<br/>
-<br/>
-<br/>
-<br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
 <div class="four wide centered column">
   <br/>
   <br/>
@@ -20,7 +10,7 @@
   <br/>
   <br/>
   <br/>
-    <form class="ui form" action="/login" method="post">
+    <form class="ui form" action="/register" method="post">
       <div class="field">
         <label>Username</label>
         <input type="text" name="username" placeholder="Ім'я">
@@ -29,11 +19,10 @@
         <label>Password</label>
         <input type="password" name="password" placeholder="Пароль">
       </div>
-      <button class="ui button positive" type="submit">Log in</button>
-      <a class="ui button positive" href="/register">Register</a>
+      <button class="ui button positive" type="submit">Finish register</button>
     </form>
     {% if error is defined %}
-        <h4>Error: wrong login or password</h4>
+        <h4>Login </h4>
     {% endif %}
 </div>
 {% endblock %}

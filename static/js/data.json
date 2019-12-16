@@ -1,0 +1,18 @@
+{
+    'Register module': {
+        'Register with correct data': ['Click Register button', ' Enter input data in boxes : First Name, Last Name, Login, Password', 'Click Save button'],
+       'Register with blank data': ['Click Register button',  'Enter no input data in boxes : First Name, Last Name, Login, Password', 'Click Save button'],
+       'Register without First Name': ['Click Register button',  'Enter input data in boxes : Last Name, Login, Password',  'Click Save button'],
+      'Register without Last Name': ['Click Register button', 'Enter input data in boxes : First Name, Login, Password', 'Click Save button' ],
+     'Register without Login': ['Click Register button', 'Enter input data in boxes : First Name, Last Name, Password', 'Click Save button'],
+     'Register without Password': [['Click Register button', 'Enter input data in boxes : First Name, Last Name, Login', 'Click Save button']
+    }, 
+'Login module': {
+     'Login with correct data': ['Click Login button', 'Enter correct input data in boxes : Login, Password', 'Click Ok button'],
+     'Login with blank data': ['Click Login button', 'Enter no input data in boxes : Login, Password', 'Click Ok button'],
+     'Login without Login': ['Click Login button', 'Enter input data in boxes : Password', 'Click Ok button'],
+     'Login without Password': ['Click Login button', 'Enter input data in boxes : Login, 'Click Ok button'],
+      'Login with incorrect Login andPassword': ['Click Login button', 'Enter incorrect data in boxes : Login, Password', 'Click Ok button']     
+   },
+}
+
